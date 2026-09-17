@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="16" fill="#111111"/>
+  <g fill="none" stroke="#fcfcfc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Ammonite spiral -->
+    <path d="M32 12 C44 12 52 21 52 32 C52 43 43 52 32 52 C21 52 14 43 14 33 C14 24 20 19 28 19 C35 19 40 24 40 31 C40 37 35 41 30 41 C26 41 23 38 23 34 C23 31 25 29 28 29" />
+    <!-- Fossil septa lines -->
+    <path d="M32 12 L32 19" />
+    <path d="M43 16 L38 23" />
+    <path d="M50 25 L40 27" />
+    <path d="M52 35 L40 33" />
+    <path d="M46 45 L36 38" />
+    <path d="M36 51 L32 41" />
+    <path d="M24 50 L27 40" />
+    <path d="M16 41 L23 36" />
+    <path d="M14 31 L23 32" />
+    <path d="M19 22 L26 27" />
+  </g>
+  <circle cx="28" cy="29" r="1.5" fill="#fcfcfc"/>
+</svg>
