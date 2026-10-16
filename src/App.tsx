@@ -199,6 +199,7 @@ export default function App() {
   const [showVideo, setShowVideo] = useState(false);
   const [activeChapter, setActiveChapter] = useState(2); // starts at "Reptiles of the Mesozoic"
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showSpecimenDetails, setShowSpecimenDetails] = useState(false);
 
   // showVideo flips to true after a 2800ms delay
   useEffect(() => {
@@ -208,20 +209,12 @@ export default function App() {
     return () => clearTimeout(videoTimer);
   }, []);
 
-  // activeChapter auto-cycles every 3500ms, wrapping (prev + 1) % 5
-  useEffect(() => {
-    const cycleTimer = setInterval(() => {
-      setActiveChapter((prev) => (prev + 1) % chaptersData.length);
-    }, 3500);
-    return () => clearInterval(cycleTimer);
-  }, []);
-
   const navLinks = ["Visit", "Exhibitions", "Discover", "Learn", "About"];
 
   return (
     <div className="relative w-full bg-[#fcfcfc] text-[#111] selection:bg-black selection:text-white overflow-x-hidden font-sans">
       {/* SECTION 1: HERO (full viewport height) */}
-      <section className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden">
+      <section id="visit" className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden">
         {/* 1D. BACKGROUND VIDEO */}
         <AnimatePresence>
           {showVideo && (
@@ -472,7 +465,8 @@ export default function App() {
             </motion.p>
 
             {/* CTA Button ("Explore Now") */}
-            <motion.button
+            <motion.a
+              href="#exhibitions"
               variants={fadeUp}
               className="group relative overflow-hidden bg-[#1a1a1a] px-6 py-3.5 border border-[#1a1a1a] rounded-md shadow-sm transition-all duration-300 hover:-translate-y-[0.5px] hover:shadow-[3px_3px_0px_rgba(17,17,17,0.5)] active:translate-y-0 active:shadow-none inline-flex items-center gap-3 cursor-pointer"
             >
@@ -501,7 +495,7 @@ export default function App() {
               <span className="relative z-10 text-[15px] font-medium text-white group-hover:text-[#111] transition-colors duration-300">
                 Explore Now
               </span>
-            </motion.button>
+            </motion.a>
           </motion.div>
 
           {/* 1F. RIGHT SIDEBAR (hidden on mobile) */}
@@ -550,6 +544,10 @@ export default function App() {
             {/* View Details button */}
             <motion.button
               variants={fadeUp}
+              type="button"
+              onClick={() => setShowSpecimenDetails((shown) => !shown)}
+              aria-expanded={showSpecimenDetails}
+              aria-controls="specimen-details"
               className="group flex items-center gap-3 pt-2 cursor-pointer text-left"
             >
               <div className="w-10 h-10 rounded-full border border-gray-400 flex items-center justify-center transition-all duration-300 group-hover:border-black group-hover:bg-[#111]">
@@ -563,6 +561,11 @@ export default function App() {
                 View Details
               </span>
             </motion.button>
+            {showSpecimenDetails && (
+              <p id="specimen-details" className="text-[11px] leading-relaxed text-gray-600 border-l border-gray-300 pl-3" role="region" aria-label="Tyrannosaurus rex details">
+                One of the largest known land predators, with powerful jaws and keen senses.
+              </p>
+            )}
           </motion.div>
         </div>
 
@@ -584,7 +587,7 @@ export default function App() {
       </section>
 
       {/* SECTION 2: "EXPLORE OUR WORLD" */}
-      <section className="relative w-full min-h-[75vh] md:min-h-screen bg-[#fcfcfc] flex flex-col items-center pt-24 md:pt-32 pb-0 z-20">
+      <section id="exhibitions" className="relative w-full min-h-[75vh] md:min-h-screen bg-[#fcfcfc] flex flex-col items-center pt-24 md:pt-32 pb-0 z-20">
         {/* 2A. SECTION LABEL */}
         <div className="text-[10px] md:text-[11px] font-mono tracking-[0.2em] mb-12">
           <span className="text-gray-500 mr-2">[ 02 ]</span>
@@ -618,16 +621,21 @@ export default function App() {
           className="flex flex-wrap justify-center gap-3 md:gap-4 mt-12 mb-10 md:mb-24 px-6 z-10"
         >
           {[
-            { label: "Dinosaurs", icon: Bone },
-            { label: "Ancient Life", icon: Dna },
-            { label: "Minerals", icon: Gem },
-            { label: "Fossils", icon: Leaf },
-            { label: "Learn More", icon: BookOpen },
+            { label: "Dinosaurs", icon: Bone, chapter: 0 },
+            { label: "Ancient Life", icon: Dna, chapter: 1 },
+            { label: "Minerals", icon: Gem, chapter: 3 },
+            { label: "Fossils", icon: Leaf, chapter: 4 },
+            { label: "Learn More", icon: BookOpen, chapter: null },
           ].map((pill) => {
             const Icon = pill.icon;
             return (
               <motion.button
                 key={pill.label}
+                type="button"
+                onClick={() => {
+                  if (pill.chapter !== null) setActiveChapter(pill.chapter);
+                  document.getElementById("learn")?.scrollIntoView({ behavior: "smooth" });
+                }}
                 variants={fadeUp}
                 className="rounded-full border border-gray-300 text-[11px] font-medium uppercase tracking-wider bg-white/50 backdrop-blur-sm text-gray-800 px-6 py-2.5 flex items-center gap-2.5 cursor-pointer transition-all duration-300 hover:border-black hover:bg-black hover:text-white group"
               >
@@ -653,7 +661,7 @@ export default function App() {
       </section>
 
       {/* SECTION 3: "ANCIENT COLLECTION" (Dark Section) */}
-      <section className="relative w-full bg-[#0a0a0a] text-white flex flex-col z-30">
+      <section id="learn" className="relative w-full bg-[#0a0a0a] text-white flex flex-col z-30">
         {/* 3A. PTERODACTYL IMAGE (Overlapping upward) */}
         <motion.div
           initial={{ y: "-65%", opacity: 0 }}
@@ -675,15 +683,15 @@ export default function App() {
           <h3 className="text-[1.8rem] md:text-[3rem] lg:text-[3.8rem] xl:text-[4rem] leading-[1.15] font-medium tracking-tight text-white max-w-[880px]">
             Curated from millions of years of wonder{" "}
             <span className="inline-flex items-center gap-2 md:gap-3 align-middle mx-2 md:mx-4 -translate-y-1">
-              <span className="w-10 h-10 md:w-14 md:h-14 rounded-full border border-gray-600 bg-black text-gray-400 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 cursor-pointer">
+              <button type="button" onClick={() => setActiveChapter(0)} aria-label="Show dinosaurs chapter" className="w-10 h-10 md:w-14 md:h-14 rounded-full border border-gray-600 bg-black text-gray-400 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 cursor-pointer">
                 <Bone size={22} />
-              </span>
-              <span className="w-10 h-10 md:w-14 md:h-14 rounded-full border border-gray-600 bg-black text-gray-400 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 cursor-pointer">
+              </button>
+              <button type="button" onClick={() => setActiveChapter(1)} aria-label="Show ancient life chapter" className="w-10 h-10 md:w-14 md:h-14 rounded-full border border-gray-600 bg-black text-gray-400 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 cursor-pointer">
                 <Dna size={22} />
-              </span>
-              <span className="w-10 h-10 md:w-14 md:h-14 rounded-full border border-gray-600 bg-black text-gray-400 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 cursor-pointer">
+              </button>
+              <button type="button" onClick={() => setActiveChapter(3)} aria-label="Show marine fossil gallery chapter" className="w-10 h-10 md:w-14 md:h-14 rounded-full border border-gray-600 bg-black text-gray-400 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300 cursor-pointer">
                 <Leaf size={22} />
-              </span>
+              </button>
             </span>{" "}
             & discovery.
           </h3>
@@ -699,7 +707,7 @@ export default function App() {
               {["Educational", "Authentic", "Inspiring"].map((tag) => (
                 <span
                   key={tag}
-                  className="px-5 py-2 rounded-full border border-gray-600 text-[9px] font-mono tracking-widest uppercase text-gray-300 hover:bg-white hover:text-black hover:border-white transition-all duration-300 cursor-pointer"
+                  className="px-5 py-2 rounded-full border border-gray-600 text-[9px] font-mono tracking-widest uppercase text-gray-300"
                 >
                   {tag}
                 </span>
@@ -765,10 +773,12 @@ export default function App() {
               {chaptersData.map((chapter, index) => {
                 const isActive = activeChapter === index;
                 return (
-                  <div
+                  <button
                     key={chapter.name}
+                    type="button"
+                    aria-pressed={isActive}
                     onClick={() => setActiveChapter(index)}
-                    className={`border-b border-gray-800/80 py-8 px-8 flex items-center justify-between cursor-pointer transition-colors duration-300 ${
+                    className={`w-full text-left border-b border-gray-800/80 py-8 px-8 flex items-center justify-between cursor-pointer transition-colors duration-300 ${
                       isActive
                         ? "text-white bg-white/[0.02]"
                         : "text-[#444] hover:text-[#999]"
@@ -795,7 +805,7 @@ export default function App() {
                         )}
                       </AnimatePresence>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -803,19 +813,12 @@ export default function App() {
         </div>
 
         {/* 3D. BOTTOM FOOTER */}
-        <footer className="border-t border-gray-800 px-8 py-8 text-[10px] font-mono tracking-widest text-gray-500 uppercase bg-[#0a0a0a] flex flex-col sm:flex-row justify-between items-center gap-4">
+        <footer id="about" className="border-t border-gray-800 px-8 py-8 text-[10px] font-mono tracking-widest text-gray-500 uppercase bg-[#0a0a0a] flex flex-col sm:flex-row justify-between items-center gap-4">
           <span>DIGGING INTO OUR PLANET'S PAST</span>
-          <span>
-            MADE BY{" "}
-            <a
-              href="https://lennoxlewis.co.ke"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-300 hover:text-white transition-colors duration-200 underline underline-offset-4 decoration-gray-600 hover:decoration-white"
-            >
-              LENNOX LEWIS
-            </a>
-          </span>
+          <a href="https://lennoxlewis.co.ke" target="_blank" rel="noopener noreferrer" aria-label="Visit Lennox Lewis's website" className="flex items-center gap-3 group">
+            <span>MADE BY <span className="text-gray-300 group-hover:text-white transition-colors duration-200 underline underline-offset-4 decoration-gray-600 group-hover:decoration-white">LENNOX LEWIS</span></span>
+            <img src="/Signatures/signature_L_white.png" alt="Lennox Lewis signature" className="h-8 w-auto opacity-75 transition-opacity group-hover:opacity-100" />
+          </a>
         </footer>
       </section>
     </div>
