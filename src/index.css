@@ -21,6 +21,12 @@ html, body {
   font-family: var(--font-sans);
 }
 
+html { scroll-behavior: smooth; }
+section[id] { scroll-margin-top: 24px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
 ::selection {
   background-color: #000;
   color: #fff;

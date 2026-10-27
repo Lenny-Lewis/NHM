@@ -6,7 +6,6 @@ import {
   Plus,
   Bone,
   Dna,
-  Gem,
   Leaf,
   BookOpen,
 } from "lucide-react";
@@ -18,27 +17,39 @@ import ch4 from "./assets/04.png";
 import ch5 from "./assets/05.png";
 import pterodactylImg from "./assets/pterodactyl.png";
 import heroVideo from "./assets/hero-video.mp4";
+import MuseumFooter from "@/components/museum-footer";
+import MuseumContent from "@/components/museum-content";
 
 const chaptersData = [
   {
     name: "Age of Dinosaurs",
     image: ch1,
+    description: "Study the anatomy of a land predator. Compare its teeth, powerful hind limbs and balancing tail to discover how a skeleton offers clues to a life long gone.",
+    prompt: "Look for the balance between the skull and tail.",
   },
   {
     name: "Fossils of Ancient Life",
     image: ch2,
+    description: "Fossils preserve more than the shapes of ancient animals. They hold evidence of growth, movement and environments that have disappeared from the modern world.",
+    prompt: "What can you observe before making an interpretation?",
   },
   {
     name: "Reptiles of the Mesozoic",
     image: ch3,
+    description: "Dinosaurs shared their world with many other reptiles. Explore the variety of body shapes and ask how different features helped animals survive in different habitats.",
+    prompt: "Compare the arrangement and proportions of the limbs.",
   },
   {
     name: "Marine Fossil Gallery",
     image: ch4,
+    description: "Ancient seas were home to remarkable creatures. Look at the features of marine specimens and consider how life in water shaped the way they moved and fed.",
+    prompt: "Which features might reduce resistance in water?",
   },
   {
     name: "Prehistoric Giants",
     image: ch5,
+    description: "Size changes the way an animal lives. Explore the structures that support a large body, and think about the food, space and energy a giant would need.",
+    prompt: "Follow the skeleton from its supporting limbs to its spine.",
   },
 ];
 
@@ -210,11 +221,17 @@ export default function App() {
   }, []);
 
   const navLinks = ["Visit", "Exhibitions", "Discover", "Learn", "About"];
+  const exploreChapter = (index: number) => {
+    setActiveChapter(index);
+    document.getElementById("collections")?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+    });
+  };
 
   return (
     <div className="relative w-full bg-[#fcfcfc] text-[#111] selection:bg-black selection:text-white overflow-x-hidden font-sans">
       {/* SECTION 1: HERO (full viewport height) */}
-      <section id="visit" className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden">
+      <section id="home" className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden">
         {/* 1D. BACKGROUND VIDEO */}
         <AnimatePresence>
           {showVideo && (
@@ -331,7 +348,7 @@ export default function App() {
           >
             {/* Left column (15% width) */}
             <div className="w-[15%] hidden sm:flex flex-col text-[#111] leading-tight font-mono">
-              <span>Natura</span>
+              <span>Natural</span>
               <span>History</span>
               <span>Museum</span>
             </div>
@@ -604,7 +621,7 @@ export default function App() {
         >
           Unearth the stories of our planet's past{" "}
           <br className="hidden md:inline" />
-          through fossils, minerals, and ancient wonders.
+          through fossils, prehistoric life, and ancient wonders.
         </motion.h2>
 
         {/* 2C. ACTION PILLS */}
@@ -623,8 +640,8 @@ export default function App() {
           {[
             { label: "Dinosaurs", icon: Bone, chapter: 0 },
             { label: "Ancient Life", icon: Dna, chapter: 1 },
-            { label: "Minerals", icon: Gem, chapter: 3 },
-            { label: "Fossils", icon: Leaf, chapter: 4 },
+            { label: "Marine Life", icon: Leaf, chapter: 3 },
+            { label: "Prehistoric Giants", icon: Bone, chapter: 4 },
             { label: "Learn More", icon: BookOpen, chapter: null },
           ].map((pill) => {
             const Icon = pill.icon;
@@ -633,8 +650,8 @@ export default function App() {
                 key={pill.label}
                 type="button"
                 onClick={() => {
-                  if (pill.chapter !== null) setActiveChapter(pill.chapter);
-                  document.getElementById("learn")?.scrollIntoView({ behavior: "smooth" });
+                  if (pill.chapter !== null) exploreChapter(pill.chapter);
+                  else document.getElementById("learn")?.scrollIntoView({ behavior: "smooth" });
                 }}
                 variants={fadeUp}
                 className="rounded-full border border-gray-300 text-[11px] font-medium uppercase tracking-wider bg-white/50 backdrop-blur-sm text-gray-800 px-6 py-2.5 flex items-center gap-2.5 cursor-pointer transition-all duration-300 hover:border-black hover:bg-black hover:text-white group"
@@ -661,7 +678,7 @@ export default function App() {
       </section>
 
       {/* SECTION 3: "ANCIENT COLLECTION" (Dark Section) */}
-      <section id="learn" className="relative w-full bg-[#0a0a0a] text-white flex flex-col z-30">
+      <section id="collections" className="relative w-full bg-[#0a0a0a] text-white flex flex-col z-30">
         {/* 3A. PTERODACTYL IMAGE (Overlapping upward) */}
         <motion.div
           initial={{ y: "-65%", opacity: 0 }}
@@ -768,6 +785,11 @@ export default function App() {
               </span>
             </div>
 
+            <div className="px-8 py-7 border-b border-gray-800" aria-live="polite">
+              <p className="text-sm text-gray-400 leading-relaxed max-w-2xl">{chaptersData[activeChapter].description}</p>
+              <p className="mt-4 text-[10px] font-mono tracking-wider text-[#b6c0a3] uppercase">Observe / {chaptersData[activeChapter].prompt}</p>
+            </div>
+
             {/* Chapter list */}
             <div className="flex flex-col">
               {chaptersData.map((chapter, index) => {
@@ -812,15 +834,9 @@ export default function App() {
           </div>
         </div>
 
-        {/* 3D. BOTTOM FOOTER */}
-        <footer id="about" className="border-t border-gray-800 px-8 py-8 text-[10px] font-mono tracking-widest text-gray-500 uppercase bg-[#0a0a0a] flex flex-col sm:flex-row justify-between items-center gap-4">
-          <span>DIGGING INTO OUR PLANET'S PAST</span>
-          <a href="https://lennoxlewis.co.ke" target="_blank" rel="noopener noreferrer" aria-label="Visit Lennox Lewis's website" className="flex items-center gap-3 group">
-            <span>MADE BY <span className="text-gray-300 group-hover:text-white transition-colors duration-200 underline underline-offset-4 decoration-gray-600 group-hover:decoration-white">LENNOX LEWIS</span></span>
-            <img src="/Signatures/signature_L_white.png" alt="Lennox Lewis signature" className="h-8 w-auto opacity-75 transition-opacity group-hover:opacity-100" />
-          </a>
-        </footer>
       </section>
+      <MuseumContent onExploreChapter={exploreChapter} />
+      <MuseumFooter />
     </div>
   );
 }
